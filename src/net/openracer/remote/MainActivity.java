@@ -55,41 +55,41 @@ public class MainActivity extends Activity {
 		public static final String LAST_DEVICE_NAME = "No Device";
 	}
 	
-    private String selectedAddr = null;
-    private String selectedName = null;
-    private final BroadcastReceiver receiver = new BluetoothUuidReceiver();
+	private String selectedAddr = null;
+	private String selectedName = null;
+	private final BroadcastReceiver receiver = new BluetoothUuidReceiver();
 	private BluetoothConnectionManager connecting = null;
 	private BluetoothConnectionManager btConn = null;
 	
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        
-        setContentView(R.layout.activity_main);
-        
-        SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
-        selectedAddr = prefs.getString(PrefKey.LAST_DEVICE_ADDR, PrefDefault.LAST_DEVICE_ADDR);
-        selectedName = prefs.getString(PrefKey.LAST_DEVICE_NAME, PrefDefault.LAST_DEVICE_NAME);
-        
-        Vibrator vibratorService = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-        if (vibratorService.hasVibrator() && (PackageManager.PERMISSION_GRANTED == checkCallingOrSelfPermission(permission.VIBRATE))) {
-        	vibratorService.vibrate(20);
-        }
-        
-        setUiConnected(false);
-        
-        registerReceiver(receiver, new IntentFilter(BluetoothDevice.ACTION_UUID));
-        
-        getConnectionButton().setOnClickListener(new OnClickListener() {
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		setContentView(R.layout.activity_main);
+		
+		SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
+		selectedAddr = prefs.getString(PrefKey.LAST_DEVICE_ADDR, PrefDefault.LAST_DEVICE_ADDR);
+		selectedName = prefs.getString(PrefKey.LAST_DEVICE_NAME, PrefDefault.LAST_DEVICE_NAME);
+		
+		Vibrator vibratorService = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+		if (vibratorService.hasVibrator() && (PackageManager.PERMISSION_GRANTED == checkCallingOrSelfPermission(permission.VIBRATE))) {
+			vibratorService.vibrate(20);
+		}
+		
+		setUiConnected(false);
+		
+		registerReceiver(receiver, new IntentFilter(BluetoothDevice.ACTION_UUID));
+		
+		getConnectionButton().setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				onConnectionButtonClick();
 			}
 		});
 
-        getJoypadLeft().setListener(new Listener() {
-        	private int oldValue = 0;
-        	
+		getJoypadLeft().setListener(new Listener() {
+			private int oldValue = 0;
+			
 			@Override
 			public void onInactive(float x, float y, float pressure) {
 				if (isConnected()) {
@@ -110,11 +110,11 @@ public class MainActivity extends Activity {
 				}
 			}
 		});
-        
-        getJoypadRight().setListener(new Listener() {
-        	
-        	private int oldValue = 0;
-        	
+		
+		getJoypadRight().setListener(new Listener() {
+			
+			private int oldValue = 0;
+			
 			@Override
 			public void onInactive(float x, float y, float pressure) {
 				if (isConnected()) {
@@ -135,8 +135,8 @@ public class MainActivity extends Activity {
 				}
 			}
 		});
-        
-        getStopButton().setOnClickListener(new OnClickListener() {
+		
+		getStopButton().setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if (isConnected()) {
@@ -146,7 +146,7 @@ public class MainActivity extends Activity {
 			}
 		});
 
-//        getSeekBar().setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+//		getSeekBar().setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 //			@Override public void onStopTrackingTouch(SeekBar seekBar) { }
 //			@Override public void onStartTrackingTouch(SeekBar seekBar) { }
 //			
@@ -157,8 +157,8 @@ public class MainActivity extends Activity {
 //				}
 //			}
 //		});
-//        
-//        getSeekBar2().setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+//		
+//		getSeekBar2().setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 //			@Override public void onStopTrackingTouch(SeekBar seekBar) { }
 //			@Override public void onStartTrackingTouch(SeekBar seekBar) { }
 //			
@@ -169,33 +169,33 @@ public class MainActivity extends Activity {
 //				}
 //			}
 //		});
-//        
-//        // this is a composite one - just automates manipulation of 2 other controls
-//        getStopButton().setOnClickListener(new OnClickListener() {
+//		
+//		// this is a composite one - just automates manipulation of 2 other controls
+//		getStopButton().setOnClickListener(new OnClickListener() {
 //			@Override
 //			public void onClick(View v) {
 //				getSeekBar().setProgress(0+255);
 //				getSeekBar2().setProgress(0+255);
 //			}
 //		});
-    }
-    
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_main, menu);
-        return true;
-    }
-    
-    @Override
-    public boolean onOptionsItemSelected(android.view.MenuItem item) {
-    	if (R.id.menu_settings == item.getItemId()) {
-        	Intent intent = new Intent(this, DeviceListActivity.class);
-        	startActivityForResult(intent, 42);
-        	return true;
-    	} else {
-    		return super.onOptionsItemSelected(item);
-    	}
-    }
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.activity_main, menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(android.view.MenuItem item) {
+		if (R.id.menu_settings == item.getItemId()) {
+			Intent intent = new Intent(this, DeviceListActivity.class);
+			startActivityForResult(intent, 42);
+			return true;
+		} else {
+			return super.onOptionsItemSelected(item);
+		}
+	}
 
 	@Override
 	protected void onDestroy() {
@@ -345,15 +345,15 @@ public class MainActivity extends Activity {
 	
 	protected void onBluetoothConnectionConnected(BluetoothConnectionManager btConn) {
 		this.connecting = null;
-    	this.btConn = btConn;
-    	setUiConnected(isConnected());
-    	displayToast("Connected");
+		this.btConn = btConn;
+		setUiConnected(isConnected());
+		displayToast("Connected");
 	}
 
 	protected void onBluetoothConnectionDisconnected(String exitReason) {
-    	btConn = null;
-    	setUiConnected(isConnected());
-    	displayToast(exitReason);
+		btConn = null;
+		setUiConnected(isConnected());
+		displayToast(exitReason);
 	}
 	
 	protected void onBluetoothConnectionMessage(String data) {
@@ -361,9 +361,9 @@ public class MainActivity extends Activity {
 	}
 
 	private void displayToast(String message) {
-    	Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
-    	toast.setGravity(Gravity.TOP, 0, 10);
-    	toast.show();
+		Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
+		toast.setGravity(Gravity.TOP, 0, 10);
+		toast.show();
 	}
 
 	private void setUiConnected(boolean connected) {
@@ -380,8 +380,8 @@ public class MainActivity extends Activity {
 //			getSeekBar().setProgress(0+255);
 //			getSeekBar2().setProgress(0+255);
 		}
-    }
-    
+	}
+	
 	private void writeInitialStateCommands() {
 		try {
 			btConn.write("g\np\ni\nd\np200\n");
@@ -390,29 +390,29 @@ public class MainActivity extends Activity {
 		}
 	}
 	
-    Button getStopButton() {
-    	return (Button) findViewById(R.id.stopButton);
-    }
-    
-    Button getConnectionButton() {
-    	return (Button) findViewById(R.id.disconnectButton);
-    }
-    
-//    SeekBar getSeekBar() {
-//    	return (SeekBar) findViewById(R.id.seekBar1);
-//    }
-//    
-//    SeekBar getSeekBar2() {
-//    	return (SeekBar) findViewById(R.id.seekBar2);
-//    }
-    
-    JoypadView getJoypadLeft() {
-    	return (JoypadView) findViewById(R.id.joypadLeft);
-    }
+	Button getStopButton() {
+		return (Button) findViewById(R.id.stopButton);
+	}
+	
+	Button getConnectionButton() {
+		return (Button) findViewById(R.id.disconnectButton);
+	}
+	
+//	SeekBar getSeekBar() {
+//		return (SeekBar) findViewById(R.id.seekBar1);
+//	}
+//	
+//	SeekBar getSeekBar2() {
+//		return (SeekBar) findViewById(R.id.seekBar2);
+//	}
+	
+	JoypadView getJoypadLeft() {
+		return (JoypadView) findViewById(R.id.joypadLeft);
+	}
 
-    JoypadView getJoypadRight() {
-    	return (JoypadView) findViewById(R.id.joypadRight);
-    }
+	JoypadView getJoypadRight() {
+		return (JoypadView) findViewById(R.id.joypadRight);
+	}
 
 	private void connect() {
 		if (selectedAddr == null) {
