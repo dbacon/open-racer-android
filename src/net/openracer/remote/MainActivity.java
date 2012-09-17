@@ -16,6 +16,7 @@
 
 package net.openracer.remote;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import net.openracer.remote.JoypadView.Listener;
@@ -231,10 +232,6 @@ public class MainActivity extends Activity {
 			disconnect();
 		} else {
 			connect();
-			
-			if (isConnected()) {
-				writeInitialStateCommands();
-			}
 		}
 		setUiConnected(isConnected());
 	}
@@ -348,6 +345,18 @@ public class MainActivity extends Activity {
 		this.btConn = btConn;
 		setUiConnected(isConnected());
 		displayToast("Connected");
+		triggerVersionAndCapabilityReport();
+	}
+	
+	private void triggerVersionAndCapabilityReport() {
+		if (isConnected()) {
+			try {
+				btConn.write(0xf0); // original protocol extension escape character
+				btConn.write(0x00); // report version & capability
+			} catch (IOException e) {
+				Log.w(LOGTAG, "upgrade failed: " + e.getMessage(), e);
+			}
+		}
 	}
 
 	protected void onBluetoothConnectionDisconnected(String exitReason) {
@@ -514,6 +523,25 @@ public class MainActivity extends Activity {
 					ui.onBluetoothConnectionMessage(string);
 				}
 			});
+			
+			if (string.startsWith("ver=")) {
+				// further escaped extensions command bytes are safe
+				
+				try {
+					ui.btConn.write(0xf0); // extension escape control byte
+					ui.btConn.write(0x02); // battery query
+
+				} catch (IOException e) {
+					Log.w(LOGTAG, "batt-query failed: " + e.getMessage());
+				}
+				
+				try {
+					ui.btConn.write(0xf0);
+					ui.btConn.write(0x01); // upgrade!
+				} catch (IOException e) {
+					Log.w(LOGTAG, "proto-switch failed: " + e.getMessage());
+				}
+			}
 		}
 	}
 
