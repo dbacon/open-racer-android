@@ -116,15 +116,15 @@ public class BluetoothConnectionManager extends Thread {
 				byte[] buf = new byte[1024];
 				while (true) {
 					int nread = is.read(buf, 0, 1024);
-					String chunk = new String(buf, 0, nread);
-					int sepIndex = chunk.indexOf('\n');
-					if (sepIndex >= 0) {
-						b.append(chunk.substring(0, sepIndex));
-						onMessage(b.toString());
-						b = new StringBuilder(chunk.substring(sepIndex + 1));
-					} else {
-						b.append(chunk);
+					b.append(new String(buf, 0, nread));
+					
+					String p = b.toString();
+					int sepIndex;
+					while ((sepIndex = p.indexOf('\n')) >= 0) {
+						onMessage(p.substring(0, sepIndex));
+						p = p.substring(sepIndex + 1);
 					}
+					b = new StringBuilder(p);
 				}
 			} catch (IOException e) {
 				// this may be due to normally requested disconnect, as it reaches us as an IOException...
